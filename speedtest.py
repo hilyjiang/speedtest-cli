@@ -667,11 +667,14 @@ class SpeedtestResults(object):
             'upload': self.upload,
             'ping': self.ping,
             'server': self.server,
-            'timestamp': self.timestamp
+            'timestamp': self.timestamp,
         }
 
-    def csv(self, delimiter=','):
+    def csv(self, share=False, delimiter=','):
         """Return data in CSV format"""
+
+        if share:
+            self.share()
 
         data = self.dict()
         out = StringIO()
@@ -679,11 +682,14 @@ class SpeedtestResults(object):
         writer.writerow([data['server']['id'], data['server']['sponsor'],
                          data['server']['name'], data['timestamp'],
                          data['server']['d'], data['ping'], data['download'],
-                         data['upload']])
+                         data['upload'], data['share']])
         return out.getvalue()
 
-    def json(self, pretty=False):
+    def json(self, share=False, pretty=False):
         """Return data in JSON format"""
+
+        if share:
+            self.share()
 
         kwargs = {}
         if pretty:
@@ -1405,9 +1411,9 @@ def shell():
                 (results.upload / 1000.0 / 1000.0) / args.units[1],
                 args.units[0]))
     elif args.csv:
-        print_(results.csv(delimiter=args.csv_delimiter))
+        print_(results.csv(share=args.share, delimiter=args.csv_delimiter))
     elif args.json:
-        print_(results.json())
+        print_(results.json(share=args.share))
 
     if args.share:
         printer('Share results: %s' % results.share(), quiet)
